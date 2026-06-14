@@ -1,42 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFC Loyalty</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* إعدادات عامة */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* خلفية متحركة واحترافية */
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #182848);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #ffffff;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* تأثير الزجاج (Glassmorphism) للبطاقة */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* أيقونة NFC */
+    .icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px auto;
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+    }
+    .icon svg {
+      width: 30px;
+      fill: white;
+    }
+
+    /* النصوص */
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      color: #e0e0e0;
+    }
+
+    #name {
+      font-size: 18px;
+      font-weight: 300;
+      color: #a8b2d1;
+      margin-bottom: 30px;
+      /* تأثير النبض أثناء التحميل */
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    /* مربع النقاط */
+    .points-box {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .points-label {
+      font-size: 14px;
+      color: #8892b0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    #points {
+      font-size: 56px;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      line-height: 1;
+    }
+
+    /* تصميم الزر */
+    button {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+      border-radius: 30px;
+      padding: 16px 32px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0, 242, 254, 0.5);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+  </style>
 </head>
-<body style="font-family:Arial;text-align:center;padding:30px">
+<body>
 
-<h2>Customer Card</h2>
+  <div class="card">
+    <div class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM18 6h-2v12h2V6zm-4.5 4H12v8h1.5v-8zM9 10H7v6h2v-6z"/>
+      </svg>
+    </div>
 
-<p id="name">Loading...</p>
-<p>Points: <span id="points">0</span></p>
+    <h2>Customer Card</h2>
+    <p id="name">Loading...</p>
+    
+    <div class="points-box">
+      <span class="points-label">Total Points</span>
+      <div id="points">0</div>
+    </div>
 
-<button onclick="addPoint()">+ Add Point</button>
+    <button onclick="addPoint()">+ Add Point</button>
+  </div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+  <script>
+    // تم الحفاظ على الكود البرمجي الخاص بك 100% بدون أي تغيير في المنطق
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
-// ضع رابط الـ Apps Script هون
-const API = "https://script.google.com/macros/s/AKfycbybreq0EozqBVeOzvgG4WtTGmOIAiHcQFKubRKK1y-tEUJR2fyjOC52tsWp7hqh4LSv/exec";
+    const API = "https://script.google.com/macros/s/AKfycbybreq0EozqBVeOzvgG4WtTGmOIAiHcQFKubRKK1y-tEUJR2fyjOC52tsWp7hqh4LSv/exec";
 
-let currentPoints = 0;
+    let currentPoints = 0;
 
-fetch(`${API}?id=${id}`)
-.then(res => res.json())
-.then(data => {
-  document.getElementById("name").innerText = data.name;
-  document.getElementById("points").innerText = data.points;
-  currentPoints = data.points;
-});
+    fetch(`${API}?id=${id}`)
+    .then(res => res.json())
+    .then(data => {
+      // إيقاف تأثير النبض عند اكتمال التحميل
+      document.getElementById("name").style.animation = "none";
+      
+      document.getElementById("name").innerText = data.name;
+      document.getElementById("points").innerText = data.points;
+      currentPoints = data.points;
+    });
 
-function addPoint(){
-  currentPoints++;
+    function addPoint(){
+      currentPoints++;
 
-  fetch(API + "?action=add&id=" + id + "&points=" + currentPoints)
-  .then(() => location.reload());
-}
-</script>
+      // إعطاء تأثير تحميل للزر أثناء إضافة النقطة (اختياري، مضاف كحركة جمالية للـ UX)
+      const btn = document.querySelector('button');
+      btn.innerText = "Adding...";
+      btn.style.opacity = "0.7";
+      btn.disabled = true;
+
+      fetch(API + "?action=add&id=" + id + "&points=" + currentPoints)
+      .then(() => location.reload());
+    }
+  </script>
 
 </body>
 </html>
