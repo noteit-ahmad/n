@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NFC Loyalty</title>
+  <title>NFC Loyalty - Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* إعدادات عامة */
+    /* الإعدادات العامة والخلفية */
     * {
       margin: 0;
       padding: 0;
@@ -14,7 +14,6 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    /* خلفية متحركة واحترافية */
     body {
       min-height: 100vh;
       display: flex;
@@ -32,7 +31,7 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* تأثير الزجاج (Glassmorphism) للبطاقة */
+    /* تصميم البطاقة الزجاجية */
     .card {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(15px);
@@ -52,7 +51,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* أيقونة NFC */
+    /* الأيقونات */
     .icon {
       width: 60px;
       height: 60px;
@@ -64,6 +63,7 @@
       align-items: center;
       box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
     }
+    
     .icon svg {
       width: 30px;
       fill: white;
@@ -75,16 +75,53 @@
       font-weight: 600;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 25px;
       color: #e0e0e0;
     }
 
+    /* تصميم حقول الإدخال (تسجيل الدخول) */
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #a8b2d1;
+    }
+
+    input:focus {
+      border-color: #4facfe;
+      box-shadow: 0 0 15px rgba(79, 172, 254, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    /* رسالة الخطأ */
+    #error-msg {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-bottom: 15px;
+      display: none;
+      font-weight: 300;
+    }
+
+    /* تصميم محتوى التطبيق */
     #name {
       font-size: 18px;
       font-weight: 300;
       color: #a8b2d1;
       margin-bottom: 30px;
-      /* تأثير النبض أثناء التحميل */
       animation: pulse 1.5s infinite;
     }
 
@@ -94,7 +131,6 @@
       100% { opacity: 0.6; }
     }
 
-    /* مربع النقاط */
     .points-box {
       background: rgba(0, 0, 0, 0.2);
       border-radius: 20px;
@@ -144,12 +180,41 @@
     button:active {
       transform: translateY(1px);
     }
+
+    /* إخفاء الأقسام */
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
+  <!-- شاشة تسجيل الدخول -->
+  <div class="card" id="login-screen">
     <div class="icon">
+      <!-- أيقونة قفل -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+      </svg>
+    </div>
+    <h2>System Login</h2>
+    
+    <div class="input-group">
+      <input type="text" id="username" placeholder="Username" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Password">
+    </div>
+    
+    <p id="error-msg">Incorrect Username or Password!</p>
+    
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- شاشة التطبيق (تظهر بعد تسجيل الدخول) -->
+  <div class="card hidden" id="app-screen">
+    <div class="icon">
+      <!-- أيقونة NFC -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM18 6h-2v12h2V6zm-4.5 4H12v8h1.5v-8zM9 10H7v6h2v-6z"/>
       </svg>
@@ -163,41 +228,79 @@
       <div id="points">0</div>
     </div>
 
-    <button onclick="addPoint()">+ Add Point</button>
+    <button id="add-btn" onclick="addPoint()">+ Add Point</button>
   </div>
 
   <script>
-    // تم الحفاظ على الكود البرمجي الخاص بك 100% بدون أي تغيير في المنطق
+    // ===== نظام تسجيل الدخول =====
+    function checkAuth() {
+      // إذا كان مسجل دخول مسبقاً، اعرض التطبيق فوراً
+      if (sessionStorage.getItem("isLoggedIn") === "true") {
+        document.getElementById("login-screen").classList.add("hidden");
+        document.getElementById("app-screen").classList.remove("hidden");
+        loadApp(); // تشغيل الكود الأصلي
+      }
+    }
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+
+      if (user === "ahmad" && pass === "nfc") {
+        // حفظ الدخول عشان لما تعمل ريفريش ما يرجع يطلب الباسورد
+        sessionStorage.setItem("isLoggedIn", "true");
+        document.getElementById("error-msg").style.display = "none";
+        
+        // إخفاء تسجيل الدخول وإظهار التطبيق
+        document.getElementById("login-screen").classList.add("hidden");
+        document.getElementById("app-screen").classList.remove("hidden");
+        
+        loadApp(); // تشغيل الكود الأصلي
+      } else {
+        document.getElementById("error-msg").style.display = "block";
+      }
+    }
+
+    // السماح بتسجيل الدخول عند الضغط على Enter
+    document.getElementById("password").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        login();
+      }
+    });
+
+    // ===== الكود الأصلي تبعك (بدون أي تغيير في المنطق) =====
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
-
     const API = "https://script.google.com/macros/s/AKfycbybreq0EozqBVeOzvgG4WtTGmOIAiHcQFKubRKK1y-tEUJR2fyjOC52tsWp7hqh4LSv/exec";
-
     let currentPoints = 0;
 
-    fetch(`${API}?id=${id}`)
-    .then(res => res.json())
-    .then(data => {
-      // إيقاف تأثير النبض عند اكتمال التحميل
-      document.getElementById("name").style.animation = "none";
-      
-      document.getElementById("name").innerText = data.name;
-      document.getElementById("points").innerText = data.points;
-      currentPoints = data.points;
-    });
+    function loadApp() {
+      // جلب البيانات
+      fetch(`${API}?id=${id}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("name").style.animation = "none";
+        document.getElementById("name").innerText = data.name;
+        document.getElementById("points").innerText = data.points;
+        currentPoints = data.points;
+      });
+    }
 
     function addPoint(){
       currentPoints++;
 
-      // إعطاء تأثير تحميل للزر أثناء إضافة النقطة (اختياري، مضاف كحركة جمالية للـ UX)
-      const btn = document.querySelector('button');
+      const btn = document.getElementById('add-btn');
       btn.innerText = "Adding...";
       btn.style.opacity = "0.7";
       btn.disabled = true;
 
       fetch(API + "?action=add&id=" + id + "&points=" + currentPoints)
-      .then(() => location.reload());
+      .then(() => location.reload()); // التحديث بظل شغال ولأننا استخدمنا sessionStorage رح يرجع يفتح التطبيق مباشرة
     }
+
+    // تشغيل فحص الدخول عند فتح الصفحة
+    checkAuth();
   </script>
 
 </body>
