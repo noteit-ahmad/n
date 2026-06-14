@@ -3,28 +3,38 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFC Loyalty</title>
-  <style>
-    body { font-family: Arial; text-align:center; padding:30px; }
-    .card { background:#111; color:white; padding:20px; border-radius:15px; }
-    button { padding:15px; margin-top:20px; font-size:16px; }
-  </style>
 </head>
-<body>
+<body style="font-family:Arial;text-align:center;padding:30px">
 
-<div class="card">
-  <h2>Welcome 👋</h2>
-  <p>Points: <span id="points">0</span></p>
-  <button onclick="addPoint()">+ Add Point</button>
-</div>
+<h2>Customer Card</h2>
+
+<p id="name">Loading...</p>
+<p>Points: <span id="points">0</span></p>
+
+<button onclick="addPoint()">+ Add Point</button>
 
 <script>
-let points = localStorage.getItem("points") || 0;
-document.getElementById("points").innerText = points;
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+// ضع رابط الـ Apps Script هون
+const API = "YOUR_SCRIPT_URL_HERE";
+
+let currentPoints = 0;
+
+fetch(`${API}?id=${id}`)
+.then(res => res.json())
+.then(data => {
+  document.getElementById("name").innerText = data.name;
+  document.getElementById("points").innerText = data.points;
+  currentPoints = data.points;
+});
 
 function addPoint(){
-  points++;
-  localStorage.setItem("points", points);
-  document.getElementById("points").innerText = points;
+  currentPoints++;
+
+  fetch(API + "?action=add&id=" + id + "&points=" + currentPoints)
+  .then(() => location.reload());
 }
 </script>
 
